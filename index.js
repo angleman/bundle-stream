@@ -30,14 +30,14 @@ function JsonBundleStream(config) {
 	var timeField   = config.timeField
 	var only        = config.only
 	var mergeLength = (only) ? only.length : granularities[config.granularity]
-	var bundle      = []
+	this.__bundle   = []
 	var lasttime    = ''
 
-	function pushBundle() {
-		if (bundle.length > 0) {
-			var json    = JSON.stringify(bundle)
-			bundle      = []
+	this.__pushBundle = function() { // push bundle down stream
+		if (this.__bundle.length > 0) {
+			var json    = JSON.stringify(this.__bundle)
 			var data    = new Buffer(json, 'utf8')
+			this.__bundle = []
 			this.push(data)
 		}
 	}
@@ -51,19 +51,19 @@ function JsonBundleStream(config) {
 			var subtime = parsed[timeField].substr(0, mergeLength)
 			if (only) {
 				if (subtime == only) {
-					bundle.push(parsed)
+					this.__bundle.push(parsed) // add data to bundle
 				} else {
-					pushBundle()
+					this.__pushBundle() // push bundle down stream
 				}
 			} else {
 				if (subtime > lasttime) {
 					lasttime = subtime
-					pushBundle()
+					this.__pushBundle() // push bundle down stream
 				}
-				bundle.push(parsed)
+				this.__bundle.push(parsed) // add data to bundle
 			}
 		} else {
-			pushBundle()
+			this.__pushBundle() // push bundle down stream
 			this.push(data)
 		}
 		callback()
