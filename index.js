@@ -1,14 +1,16 @@
-// bundle-stream
-xtend  = require('xtend') // extend objects.  Raynos/xtend
-util   = require('util')
-stream = require('stream').Transform
+// bundle-stream by angleman, MIT
+// bundle json stream entries by timestamp granularity
+"use strict"
+
+var xtend  = require('xtend') // extend objects.  Raynos/xtend
+var util   = require('util')
+var stream = require('stream').Transform
 if (!stream) stream = require('readable-stream').Transform // stream 2 compatible
 
 // json string in and out
 function JsonDurationStream(config) {
-	self    = this
- 	stream.call(self, { objectMode: true })
-	granularities = { // assuming timestamps in the form of YYYY-MM-DD hh:mm:ss
+ 	stream.call(this, { objectMode: true })
+	var granularities = { // assuming timestamps in the form of YYYY-MM-DD hh:mm:ss
 		year:       4,    years:      4,
 		month:      7,    months:     7,
 		day:        10,   days:       10,
@@ -18,35 +20,35 @@ function JsonDurationStream(config) {
 		tensecond:  18,   tenseconds: 18,
 		second:     19,   seconds:    19
 	}
-	DEFAULT = {
+	var DEFAULT = {
 		timeField:   'timestamp',
 		granularity: 'second',
 		stamp:       false,
 		only:        undefined // only this timestamp
 	}
-	config      = xtend(DEFAULT, config)
-	timeField   = config.timeField
-	only        = config.only
-	mergeLength = (only) ? only.length : granularities[config.granularity]
-	bundle      = []
-	lasttime    = ''
+	config          = xtend(DEFAULT, config)
+	var timeField   = config.timeField
+	var only        = config.only
+	var mergeLength = (only) ? only.length : granularities[config.granularity]
+	var bundle      = []
+	var lasttime    = ''
 
 	function pushBundle() {
 		if (bundle.length > 0) {
-			json    = JSON.stringify(bundle)
-			bundle  = []
-			data    = new Buffer(json, 'utf8')
-			self.push(data)
+			var json    = JSON.stringify(bundle)
+			bundle      = []
+			var data    = new Buffer(json, 'utf8')
+			this.push(data)
 		}
 	}
 
-	self._transform = function (data, encoding, callback) {
+	this._transform = function (data, encoding, callback) {
 		if (data) {
-			json    = data.toString('utf8')
-			parsed  = JSON.parse(json)
+			var json   = data.toString('utf8')
+			var parsed = JSON.parse(json)
 			if (!parsed[timeField]) throw new Error('Missing timeField:', timeField)
 			
-			subtime = parsed[timeField].substr(0, mergeLength)
+			var subtime = parsed[timeField].substr(0, mergeLength)
 			if (only) {
 				if (subtime == only) {
 					bundle.push(parsed)
@@ -62,7 +64,7 @@ function JsonDurationStream(config) {
 			}
 		} else {
 			pushBundle()
-			self.push(data)
+			this.push(data)
 		}
 		callback()
 	}
