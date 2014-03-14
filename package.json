@@ -14,6 +14,8 @@
     "url": "https://github.com/angleman/bundle-stream/issues"
   },
   "dependencies": {
+	  "readable-stream": "~1.0.26",
+	  "xtend": "^2.1.2"
   },
   "devDependencies": {
     "grunt": "^0.4.3",
