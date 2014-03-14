@@ -1,5 +1,5 @@
 {
-  "name": "bundle-stream",
+  "name": "json-bundle-stream",
   "version": "0.1.1",
   "description": "bundle json stream entries by timestamp granularity",
   "main": "index.js",
@@ -8,10 +8,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/angleman/bundle-stream"
+    "url": "https://github.com/angleman/json-bundle-stream"
   },
   "bugs": {
-    "url": "https://github.com/angleman/bundle-stream/issues"
+    "url": "https://github.com/angleman/json-bundle-stream/issues"
   },
   "dependencies": {
 	  "readable-stream": "~1.0.26",

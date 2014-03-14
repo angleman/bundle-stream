@@ -1,11 +1,11 @@
-# bundle-stream
+# json-bundle-stream
 
 bundle json stream entries by timestamp granularity 
 
 ## Install :hammer:
 
 ```sh
-npm install bundle-stream
+npm install json-bundle-stream
 ```
 
 ## Usage :bulb:
@@ -23,7 +23,7 @@ example.js
 ```js
 inStream     = require('in-stream')
 split        = new require('split')()
-bundleStream = new require('bundle-stream')({ granularity: 'day', timeField: 'registered' })
+bundleStream = new require('json-bundle-stream')({ granularity: 'day', timeField: 'registered' })
 outStream    = require('out-stream')
 
 inStream.pipe(split).pipe(bundleStream).pipe(outStream)

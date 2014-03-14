@@ -1,4 +1,4 @@
-// bundle-stream by angleman, MIT
+// json-bundle-stream by angleman, MIT
 // bundle json stream entries by timestamp granularity
 "use strict"
 
@@ -8,7 +8,7 @@ var stream = require('stream').Transform
 if (!stream) stream = require('readable-stream').Transform // stream 2 compatible
 
 // json string in and out
-function JsonDurationStream(config) {
+function JsonBundleStream(config) {
  	stream.call(this, { objectMode: true })
 	var granularities = { // assuming timestamps in the form of YYYY-MM-DD hh:mm:ss
 		year:       4,    years:      4,
@@ -70,5 +70,5 @@ function JsonDurationStream(config) {
 	}
 }
 
-util.inherits(JsonDurationStream, stream);
-module.exports = JsonDurationStream;
+util.inherits(JsonBundleStream, stream)
+module.exports = JsonBundleStream
