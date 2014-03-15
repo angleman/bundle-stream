@@ -24,7 +24,8 @@ function JsonBundleStream(config) {
 		timeField:   'timestamp',
 		granularity: 'second',
 		stamp:       false,
-		only:        undefined // only this timestamp
+		only:        undefined, // only this timestamp,
+		delimiter:  "\n"
 	}
 	config          = xtend(DEFAULT, config)
 	var timeField   = config.timeField
@@ -32,18 +33,28 @@ function JsonBundleStream(config) {
 	var mergeLength = (only) ? only.length : granularities[config.granularity]
 	this.__bundle   = []
 	var lasttime    = ''
+	this.__stats    = {
+		rowsIn: 0,
+		bundlesOut: 0
+	}
 
 	this.__pushBundle = function() { // push bundle down stream
 		if (this.__bundle.length > 0) {
-			var json    = JSON.stringify(this.__bundle)
+			this.__stats.bundlesOut++
+			var json    = JSON.stringify(this.__bundle) + config.delimiter
 			var data    = new Buffer(json, 'utf8')
 			this.__bundle = []
 			this.push(data)
 		}
 	}
 
+	this.stats = function() {
+		return this.__stats
+	}
+
 	this._transform = function (data, encoding, callback) {
 		if (data) {
+			this.__stats.rowsIn++
 			var json   = data.toString('utf8')
 			var parsed = JSON.parse(json)
 			if (!parsed[timeField]) throw new Error('Missing timeField:', timeField)

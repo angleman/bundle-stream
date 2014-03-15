@@ -26,7 +26,9 @@ split        = new require('split')()
 bundleStream = new require('json-bundle-stream')({ granularity: 'day', timeField: 'registered' })
 outStream    = require('out-stream')
 
-inStream.pipe(split).pipe(bundleStream).pipe(outStream)
+inStream.pipe(split).pipe(bundleStream).pipe(outStream).on('end', function() {
+	console.log(bundleStream.stats())
+})
 ```
 
 Results of ```node example.js -f sample.json```
@@ -40,6 +42,21 @@ Results of ```node example.js -f sample.json```
 
 - **granularity**: second
 - **timeField**: timestamp
+
+## Granularities
+
+```
+granularities = { // assuming timestamps in the form of 'YYYY-MM-DD hh:mm:ss'
+	year:       4,    years:      4,
+	month:      7,    months:     7,
+	day:        10,   days:       10,
+	hour:       13,   hours:      13,
+	tenminute:  15,   tenminutes: 15,
+	minute:     16,   minutes:    16,
+	tensecond:  18,   tenseconds: 18,
+	second:     19,   seconds:    19
+}
+```
 
 ## Contributions :muscle:
 
