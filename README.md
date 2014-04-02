@@ -31,6 +31,23 @@ inStream.pipe(split).pipe(bundleStream).pipe(outStream).on('end', function() {
 })
 ```
 
+You can be informed when the granularity changes
+
+```js
+bundleStream.on('bundle', function(timestampOfBundleChange) {
+	console.log(timestampOfBundleChange) // 2014-03-05
+})
+```
+
+Bundles can also have entry limits, ex:
+
+
+```js
+bundleStream = new require('json-bundle-stream')({ granularity: 'day', timeField: 'registered', maxBundleCount: 100})
+```
+
+Default ```maxBundleCount``` is 0 for no-limit
+
 Results of ```node example.js -f sample.json```
 
 ```js
@@ -38,10 +55,14 @@ Results of ```node example.js -f sample.json```
 [{"name": "ann", "age":"25", "registered": "2014-03-06"}]
 ```
 
+Note: with the ```maxBundleCount = 1``` in 0.2.x, data is passed-thru without being converted to an array
+
 ## Defaults
 
 - **granularity**: second
 - **timeField**: timestamp
+- **maxBundleCount**: 0
+- **only**: false, if true then only the first match is bundled and passed thru filtering all other data
 
 ## Granularities
 

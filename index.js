@@ -21,11 +21,12 @@ function JsonBundleStream(config) {
 		second:     19,   seconds:    19
 	}
 	var DEFAULT = {
-		timeField:   'timestamp',
-		granularity: 'second',
-		stamp:       false,
-		only:        undefined, // only this timestamp,
-		delimiter:  "\n"
+		timeField:     'timestamp',
+		granularity:   'second',
+//		stamp:         false,
+		only:          undefined, // only this timestamp,
+		delimiter:     "\n",
+		maxBundleCount: 0, // 0 no limit, 1 pass-thru, >1 bundle limit
 	}
 	config          = xtend(DEFAULT, config)
 	var timeField   = config.timeField
@@ -34,7 +35,7 @@ function JsonBundleStream(config) {
 	this.__bundle   = []
 	var lasttime    = ''
 	this.__stats    = {
-		rowsIn: 0,
+		rowsIn:     0,
 		bundlesOut: 0
 	}
 
@@ -59,7 +60,8 @@ function JsonBundleStream(config) {
 			var parsed = JSON.parse(json)
 			if (!parsed[timeField]) throw new Error('Missing timeField:', timeField)
 			
-			var subtime = parsed[timeField].substr(0, mergeLength)
+			var thistime = parsed[timeField]
+			var subtime  = thistime.substr(0, mergeLength)
 			if (only) {
 				if (subtime == only) {
 					this.__bundle.push(parsed) // add data to bundle
@@ -67,11 +69,16 @@ function JsonBundleStream(config) {
 					this.__pushBundle() // push bundle down stream
 				}
 			} else {
-				if (subtime > lasttime) {
+				if (subtime > lasttime || (config.maxBundleCount > 1 && this.__bundle.length >= config.maxBundleCount)) {
+					this.emit('bundle', thistime)
 					lasttime = subtime
 					this.__pushBundle() // push bundle down stream
 				}
-				this.__bundle.push(parsed) // add data to bundle
+				if (config.maxBundleCount == 1) {
+					this.push(data)
+				} else {
+					this.__bundle.push(parsed) // add data to bundle
+				}
 			}
 		} else {
 			this.__pushBundle() // push bundle down stream
