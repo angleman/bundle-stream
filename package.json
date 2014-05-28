@@ -1,6 +1,6 @@
 {
   "name": "json-bundle-stream",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "bundle json stream entries by timestamp granularity",
   "main": "index.js",
   "scripts": {
